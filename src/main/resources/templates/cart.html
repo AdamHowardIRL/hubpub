@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<title>Checkout - PubHub</title>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"/>
+ 		
+ 		<script src="https://use.fontawesome.com/564df5e8ea.js"></script>
+ 		<link rel="stylesheet" href="style.css"/>
+	</head>
+
+	<body>
+		 
+<div class="container-fluid">
+  
+<div class="row">
+
+  <nav class="blue">
+
+    <div class="nav-wrapper">
+    <div class="row">
+   		<div class="col s2 l2">
+    		<a href="/home"><img src="logo.png" id="brandImg"/></a>
+    	</div>
+
+	<div class="col s2 l2"><span class="fa fa-search right in"></span></div>
+    <div class="col s4 l5">
+	
+      <form class="blue">
+      	<div class="header-search-wrapper">
+
+      	
+          <input id="search" type="search" placeholder=" Search Pubs" class="header-search-input z-depth-2 s"></input>
+          
+  		</div>
+
+
+      </form>
+
+  	</div>
+<div class="col s4 l3">
+  	<ul id="nav-mobile" class="right">
+        <li><a href="/cart"> <span class="fa fa-shopping-cart fa-2x"></span>  </a></li>
+        <li><a href="/account"> <span class="fa fa-user fa-2x"></span>     </a></li>
+      </ul>
+</div>
+ 
+  </div>
+    </div>
+  </nav>
+  </div>
+<div class="row">
+  <h4 class="center-align">Your Cart</h4>
+
+</div>
+
+	<div class="row">
+
+<div class="deck">
+  <div class="col l3"></div>
+	<div class="col s6 l3">
+
+			<div class="card-panel hoverable" th:each="p : ${cart1}">
+  <div class="card-header">
+    <img src="bulmers.jpg" class="responsive-img" th:src="${p.image}"/>
+  </div>
+  <div class="card-content">
+    <h3 class="center-align" th:text="${p.name}">Bulmers</h3>
+    <h3 class="center-align" style="margin-top: 10px; color:  #FF5252;"><i class="fa fa-euro"></i><span th:text="${p.price}"></span></h3>
+    <h4 class="center-align" th:text="${p.desc}" style="margin-top: 10px; color: black;" id="desc">The Forge, Duntaheen Road </h4>
+  </div>
+  <div class="card-footer">
+  	<form method="post" th:object="${product}" th:action="@{/rmCart}" th:name="form + ${p.id}">
+   <input type="hidden" th:value="${p.id}" name="hiddenid"></input>
+   <input type="hidden" th:value="${p.cartId}" name="pubid"></input>
+   <button type="submit" class="btn btn-block red" style="width: 100%;">Remove <i class="fa fa-times"></i></button>
+  	</form>
+  
+  </div>
+</div>
+
+</div>
+
+<div class="col s6 l3">
+
+		<div class="card-panel hoverable" th:each="p : ${cart2}">
+  <div class="card-header">
+    <img src="bulmers.jpg" class="responsive-img" th:src="${p.image}"/>
+  </div>
+  <div class="card-content">
+    <h3 class="center-align" th:text="${p.name}">Bulmers</h3>
+    <h3 class="center-align" style="margin-top: 10px; color:  #FF5252;"><i class="fa fa-euro"></i><span th:text="${p.price}"></span></h3>
+    <h4 class="center-align" th:text="${p.desc}" style="margin-top: 10px; color: black;" id="desc">The Forge, Duntaheen Road </h4>
+  </div>
+  <div class="card-footer">
+  	<form method="post" th:object="${product}" th:action="@{/rmCart}" th:name="form + ${p.id}">
+   <input type="hidden" th:value="${p.id}" name="hiddenid"></input>
+   <input type="hidden" th:value="${p.cartId}" name="pubid"></input>
+   <button type="submit" class="btn btn-block red" style="width: 100%;">Remove <i class="fa fa-times"></i></button>
+  	</form>
+  
+  </div>
+</div>
+
+
+
+</div>
+ <div class="col l3"></div>
+
+
+
+
+</div>
+
+	
+	</div>
+
+	<div class="row">
+  
+  <h4 class="center-align"><i class="fa fa-euro"></i><span th:text="${totalCart}"></span></h4>
+
+</div>
+
+<div class="row">
+  <div class="col s1 m2 l3"></div>
+  <div class="col s10 m8 l6">
+  <a class="btn modal-trigger green btn-block" href="#modal1">Pay</a>
+
+  
+  <!-- Modal Structure -->
+    <div id="modal1" class="modal">
+      <div class="modal-content">
+        <h4 class="center-align">Payment Method</h4>
+<div class="col s3"></div>
+<div class="col s6"><a class='dropdown-button btn-block blue darken-1 btn' href='#' data-activates='dropdown1'>Saved Payment Methods</a></div>
+          
+
+  <!-- Dropdown Structure -->
+  <ul id='dropdown1' class='dropdown-content'>
+    <li><a class="bb" href="#!">Adams BOI Card</a></li>
+    <li><a href="#!">AIB</a></li>
+    
+  </ul>
+
+
+        <div class="row">
+          <form class="col s12" id="form1" name="form1" action="/addP">
+          
+            <div class="row modal-form-row">
+              <div class="input-field col s12">
+                <input id="card_num" type="text" class="validate" placeholder="Card Number"></input>
+  
+              </div>
+            </div>
+          
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="card_cvv" type="text" class="validate" placeholder="CVV"></input>
+            
+            </div>
+          </div>       
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="card_expiry" type="text" class="validate" placeholder="Expiry"></input>
+    
+            </div>
+          </div>
+           <div class="row modal-form-row">
+              <div class="input-field col s12">
+                <input id="card_name" type="text" class="validate" placeholder="Card Holder"></input>
+  
+              </div>
+            </div>
+         
+        </form>
+      </div>
+    
+    </div>
+    <div class="modal-footer">
+      <a class="modal-action modal-close btn-block btn green ">Pay</a>
+    </div>
+  </div>
+</div>
+
+
+</div>
+</div>
+
+<script
+  src="https://code.jquery.com/jquery-3.2.1.js"
+  integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+  crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+<script type="text/javascript">
+       $(document).ready(function(){
+    $('ul.tabs').tabs();
+     $('.modal').modal();
+     $('.modal-trigger').leanModal();
+  });
+</script>
+	</body>
+
+
+</html>

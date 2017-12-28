@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<title>PubHub</title>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"/>
+ 		
+ 		<script src="https://use.fontawesome.com/564df5e8ea.js"></script>
+ 		<link rel="stylesheet" href="style.css"/>
+
+
+<script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDd-6LOvqYQ_gcPMhpeZ5Ren2MJIfOGgkU",
+    authDomain: "pubhub-c3a5a.firebaseapp.com",
+    databaseURL: "https://pubhub-c3a5a.firebaseio.com",
+    projectId: "pubhub-c3a5a",
+    storageBucket: "pubhub-c3a5a.appspot.com",
+    messagingSenderId: "589036248286"
+  };
+  firebase.initializeApp(config);
+</script>
+
+
+	</head>
+
+	<body>
+		 
+<div class="container-fluid">
+  
+<div class="row">
+
+  <nav class="blue">
+
+    <div class="nav-wrapper">
+    <div class="row">
+   		<div class="col s2 l2 max">
+    		<img src="logo.png" id="brandImg"/>
+    	</div>
+
+	<div class="col s2 l2"><span class="fa fa-search right in"></span></div>
+    <div class="col s4 l5">
+	
+      <form class="blue">
+      	<div class="header-search-wrapper">
+
+      	
+          <input id="search" type="search" placeholder="   Search Pubs" class="header-search-input z-depth-2 s" autofocus="autofocus" onfocus="this.select()"></input>
+          
+  		</div>
+
+
+      </form>
+
+  	</div>
+<div class="col s4 l3">
+  	<ul id="nav-mobile" class="right">
+        <li><a href="/cart"> <span class="fa fa-shopping-cart fa-2x"></span>  </a></li>
+        <li><a href="/account"> <span class="fa fa-user fa-2x"></span>     </a></li>
+      </ul>
+</div>
+ 
+  </div>
+    </div>
+  </nav>
+  </div>
+<h4 class="center-align ">Pubs in Fermoy, Cork</h4>
+
+	<div class="row">
+
+<div class="deck" >
+	<div class="col s12 m6 l3">
+
+		<div class="card-panel hoverable" th:each="pub : ${pubs1}">
+  <div class="card-header">
+    <img src="forge.jpg" class="responsive-img" th:src="${pub.image}" />
+  </div>
+  <div class="card-content">
+    <h3 class="center-align" id="title" th:text="${pub.name}">The Forge</h3>
+     
+    <h4 class="center-align" style="margin-top: 10px; color: black;" id="desc" th:text="${pub.desc}">Matthew Walsh barman </h4>
+    <h4 class="center-align" id="bio" style="margin-top: 10px; color: black;" th:text="${pub.bio}">Bar and Restaurant, Duntaheen Road, Fermoy</h4>
+    
+    <h4 class="center-align" id="dist" style="margin-top: 30px;" >Distance - 500m</h4>
+  </div>
+  <div class="card-footer">
+  
+   
+  <form th:object="${p}" th:action="@{/menu}" th:name="form + ${pub.id}" method="post">
+  <input th:type="hidden" th:name="hiddenid" th:value="${pub.id}"/>
+  
+  <div style="padding-bottom: 20px;">    
+    <button type="submit" class="sumb btn btn-block btn-large blue" th:name="add + ${pub.id}" value=" " style="width: 100%; max-height: 45px;">Menu <i class="fa fa-beer"></i></button>
+   </div>
+   </form>
+  </div>
+</div>
+</div>
+
+	<div class="col s12 m6 l3">
+
+		<div class="card-panel hoverable" th:each="pub : ${pubs2}">
+  <div class="card-header">
+    <img src="forge.jpg" class="responsive-img" th:src="${pub.image}" />
+  </div>
+  <div class="card-content">
+    <h3 class="center-align" id="title" th:text="${pub.name}">The Forge</h3>
+     
+    <h4 class="center-align" style="margin-top: 10px; color: black;" id="desc" th:text="${pub.desc}">Matthew Walsh barman </h4>
+    <h4 class="center-align" id="bio" style="margin-top: 10px; color: black;" th:text="${pub.bio}">Bar and Restaurant, Duntaheen Road, Fermoy</h4>
+    
+    <h4 class="center-align" id="dist" style="margin-top: 30px;" >Distance - 500m</h4>
+  </div>
+  <div class="card-footer">
+  
+   
+  <form th:object="${p}" th:action="@{/menu}" th:name="form + ${pub.id}" method="post">
+  <input th:type="hidden" th:name="hiddenid" th:value="${pub.id}"/>
+  
+  <div style="padding-bottom: 20px;">    
+    <button type="submit" class="sumb btn btn-block btn-large blue" th:name="add + ${pub.id}" value=" " style="width: 100%; max-height: 45px;">Menu <i class="fa fa-beer"></i></button>
+   </div>
+   </form>
+  </div>
+</div>
+</div>
+
+	<div class="col s12 m6 l3">
+
+		<div class="card-panel hoverable" th:each="pub : ${pubs3}">
+  <div class="card-header">
+    <img src="forge.jpg" class="responsive-img" th:src="${pub.image}" />
+  </div>
+  <div class="card-content">
+    <h3 class="center-align" id="title" th:text="${pub.name}">The Forge</h3>
+     
+    <h4 class="center-align" style="margin-top: 10px; color: black;" id="desc" th:text="${pub.desc}">Matthew Walsh barman </h4>
+    <h4 class="center-align" id="bio" style="margin-top: 10px; color: black;" th:text="${pub.bio}">Bar and Restaurant, Duntaheen Road, Fermoy</h4>
+    
+    <h4 class="center-align" id="dist" style="margin-top: 30px;" >Distance - 500m</h4>
+  </div>
+  <div class="card-footer">
+  
+   
+  <form th:object="${p}" th:action="@{/menu}" th:name="form + ${pub.id}" method="post">
+  <input th:type="hidden" th:name="hiddenid" th:value="${pub.id}"/>
+  
+  <div style="padding-bottom: 20px;">    
+    <button type="submit" class="sumb btn btn-block btn-large blue" th:name="add + ${pub.id}" value=" " style="width: 100%; max-height: 45px;">Menu <i class="fa fa-beer"></i></button>
+   </div>
+   </form>
+  </div>
+</div>
+</div>
+
+
+
+	<div class="col s12 m6 l3">
+
+		<div class="card-panel hoverable" th:each="pub : ${pubs4}">
+  <div class="card-header">
+    <img src="forge.jpg" class="responsive-img" th:src="${pub.image}" />
+  </div>
+  <div class="card-content">
+    <h3 class="center-align" id="title" th:text="${pub.name}">The Forge</h3>
+     
+    <h4 class="center-align" style="margin-top: 10px; color: black;" id="desc" th:text="${pub.desc}">Matthew Walsh barman </h4>
+    <h4 class="center-align" id="bio" style="margin-top: 10px; color: black;" th:text="${pub.bio}">Bar and Restaurant, Duntaheen Road, Fermoy</h4>
+    
+    <h4 class="center-align" id="dist" style="margin-top: 30px;" >Distance - 500m</h4>
+  </div>
+  <div class="card-footer">
+  
+   
+  <form th:object="${p}" th:action="@{/menu}" th:name="form + ${pub.id}" method="post">
+  <input th:type="hidden" th:name="hiddenid" th:value="${pub.id}"/>
+  
+  <div style="padding-bottom: 20px;">    
+    <button type="submit" class="sumb btn btn-block btn-large blue" th:name="add + ${pub.id}" value=" " style="width: 100%; max-height: 45px;">Menu <i class="fa fa-beer"></i></button>
+   </div>
+   </form>
+  </div>
+</div>
+</div>
+
+
+</div>
+
+	
+	</div>
+
+	
+
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+
+
+	</body>
+<script type="text/javascript">
+       $(document).ready(function(){
+   
+     $('#search').focus();
+     $('#search').select();
+   
+  });
+</script>
+
+</html>

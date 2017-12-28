@@ -1,0 +1,217 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Pub Account Creation</title>
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"/>
+
+ 		<script
+  src="https://code.jquery.com/jquery-3.2.1.js"
+  integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+  crossorigin="anonymous"></script>
+
+	<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=AIzaSyAFUpoRP1JNExlafCJHdyupXpEY_mcoXIM"
+      type="text/javascript"></script>
+    
+    <script type="text/javascript">
+
+    var map = null;
+    var geocoder = null;
+    var coord = null;
+	var marker = null;
+	var chicago = {lat: 41.85, lng: -87.65};
+    function initialize() {
+      if (GBrowserIsCompatible()) {
+        map = new GMap2(document.getElementById("map_canvas"));
+        map.setCenter(new GLatLng(37.4419, -122.1419), 15);
+        map.setUIToDefault();
+        geocoder = new GClientGeocoder();
+         // constructor passing in this DIV.
+        var centerControlDiv = document.createElement('div');
+        var centerControl = new CenterControl(centerControlDiv, map);
+
+        centerControlDiv.index = 1;
+        map.controls[google.maps.ControlPosition.TOP_CENTER].push(centerControlDiv);
+        
+      }
+    }
+
+    function showAddress(address) {
+      if (geocoder) {
+        geocoder.getLatLng(
+          address,
+          function(point) {
+            if (!point) {
+              alert(address + " not found");
+            } else {
+              map.setCenter(point, 15);
+              marker = new GMarker(point, {draggable: true});
+              map.addOverlay(marker);
+             
+              GEvent.addListener(marker, "dragend", function() {
+                marker.openInfoWindowHtml(marker.getLatLng().toUrlValue(6));
+                coord = marker.getLatLng().toUrlValue(6);
+              });
+              GEvent.addListener(marker, "click", function() {
+                marker.openInfoWindowHtml(marker.getLatLng().toUrlValue(6));
+              });
+        GEvent.trigger(marker, "click");
+            }
+          }
+        );
+      }
+    }
+    
+    
+       function CenterControl(controlDiv, map) {
+
+        // Set CSS for the control border.
+        var controlUI = document.createElement('div');
+        controlUI.style.backgroundColor = '#fff';
+        controlUI.style.border = '2px solid #fff';
+        controlUI.style.borderRadius = '3px';
+        controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+        controlUI.style.cursor = 'pointer';
+        controlUI.style.marginBottom = '22px';
+        controlUI.style.textAlign = 'center';
+        controlUI.title = 'Click to recenter the map';
+        controlDiv.appendChild(controlUI);
+
+        // Set CSS for the control interior.
+        var controlText = document.createElement('div');
+        controlText.style.color = 'rgb(25,25,25)';
+        controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
+        controlText.style.fontSize = '16px';
+        controlText.style.lineHeight = '38px';
+        controlText.style.paddingLeft = '5px';
+        controlText.style.paddingRight = '5px';
+        controlText.innerHTML = 'Center Map';
+        controlUI.appendChild(controlText);
+
+        // Setup the click event listeners: simply set the map to Chicago.
+        controlUI.addEventListener('click', function() {
+          map.setCenter(chicago);
+        });
+    
+      }
+    
+      
+      $(document).ready(function(){
+    		$('.submBtn').click(function(){
+    
+		$('#form2').submit();
+		console.log(marker.getLatLng().toUrlValue(6));
+ 		
+	});
+});
+    
+    
+    
+    </script>
+
+
+ 		<script src="https://use.fontawesome.com/564df5e8ea.js"></script>
+ 		<link rel="stylesheet" href="style.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+</head>
+<body onload="initialize()">
+<div class="container-fluid">
+	<div class="row">
+		<div class="col s3"></div>
+		<div class="col s6">
+
+
+
+			<div class="row">
+				<h3 class="center-align">Pub Account Creation</h3>
+			</div>
+			<div class="row">
+				         
+       <form action="#" onsubmit="showAddress(this.address.value); return false">
+     
+      <p style="margin: auto;">
+        Enter your address, then drag the marker to tweak the location.
+        <br/>
+        Your coordinates will then be displayed.
+      </p>
+      <p>
+        <input type="text" name="address" style="margin: auto; width: 100%;" placeholder="Address" />
+        <input type="submit" value="Go!" class="btn blue darken-1 btn-block"/>
+      </p>
+     	
+      <div id="map_canvas" style="width: 100%; height: 400px"></div>
+    </form>
+
+			</div>
+
+
+
+<form class="col s12" id="form2" enctype="multipart/form-data" method="post" name="form2" th:object="${pub}" th:action="@{/addPub}">
+			<div class="row">
+			<div class="input-field col s12 pubac ">
+				<input type="text" name="bio" placeholder="Bio" class="pubac" th:field="*{bio}"/>
+			</div>
+			</div>
+
+			<div class="row">
+			<div class="input-field col s12 pdwn pubac">
+				<input type="text" name="desc" placeholder="Description" class="pubac" th:field="*{desc}"/>
+			</div>
+			</div>
+			
+		
+
+      
+
+
+  
+      <div class = "row">
+               <label>Product Image</label>
+               <div class = "file-field input-field pubac">
+                  <div class = "btn blue darken-1">
+                     <span>Browse</span>
+                     
+                     <input type="file" id="p_file" name="d_file" th:field="*{imageData}" ></input>
+
+                  </div>
+                  
+                  <div class = "file-path-wrapper">
+                     <input class="file-path validate" type="text"
+                        placeholder="Upload profile image"></input>
+                  </div>
+               </div>
+            </div>
+            
+            <div class="row">
+            	<input type="hidden" name="coord" id="coord" value="1,1" th:field="*{location}"></input>
+             	<input type="submit" name="add" id="add" class="btn btn-block blue submBtn"></input>
+            </div>
+          
+</form>	
+</div>
+
+		<div class="col s3"></div>
+	</div>
+</div>
+
+
+
+<script type="text/javascript">
+ 
+      
+
+      /**
+       * The CenterControl adds a control to the map that recenters the map on
+       * Chicago.
+       * This constructor takes the control DIV as an argument.
+       * @constructor
+       */
+
+
+      
+
+</script>
+
+</body>
+</html>

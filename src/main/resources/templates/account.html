@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<title>Account - PubHub</title>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"/>
+ 		
+ 		<script src="https://use.fontawesome.com/564df5e8ea.js"></script>
+
+    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=AIzaSyAFUpoRP1JNExlafCJHdyupXpEY_mcoXIM"
+      type="text/javascript"></script>
+    
+    <script type="text/javascript">
+
+    var map = null;
+    var geocoder = null;
+
+    function initialize() {
+      if (GBrowserIsCompatible()) {
+        map = new GMap2(document.getElementById("map_canvas"));
+        map.setCenter(new GLatLng(37.4419, -122.1419), 1);
+        map.setUIToDefault();
+        geocoder = new GClientGeocoder();
+      }
+    }
+
+    function showAddress(address) {
+      if (geocoder) {
+        geocoder.getLatLng(
+          address,
+          function(point) {
+            if (!point) {
+              alert(address + " not found");
+            } else {
+              map.setCenter(point, 15);
+              var marker = new GMarker(point, {draggable: true});
+              map.addOverlay(marker);
+              GEvent.addListener(marker, "dragend", function() {
+                marker.openInfoWindowHtml(marker.getLatLng().toUrlValue(6));
+              });
+              GEvent.addListener(marker, "click", function() {
+                marker.openInfoWindowHtml(marker.getLatLng().toUrlValue(6));
+              });
+        GEvent.trigger(marker, "click");
+            }
+          }
+        );
+      }
+    }
+    </script>
+
+<script
+  src="https://code.jquery.com/jquery-3.2.1.js"
+  integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+  crossorigin="anonymous"></script>
+
+ 		<link rel="stylesheet" href="style.css"/>
+
+
+
+	</head>
+
+	<body onload="initialize()" onunload="GUnload()">
+		 
+<div class="container-fluid">
+  
+<div class="row">
+
+  <nav class="blue">
+
+    <div class="nav-wrapper">
+    <div class="row">
+ 
+   		<div class="col s2 l2 max">
+    		<a href="/home"><img src="logo.png" id="brandImg" href="/index.html"/></a>
+    	</div>
+
+	<div class="col s2 l2"><span class="fa fa-search right in"></span></div>
+    <div class="col s4 l5">
+	
+      <form class="blue">
+      	<div class="header-search-wrapper">
+
+      	
+          <input id="search" type="search" placeholder=" Search Pubs" class="header-search-input z-depth-2 s"></input>
+          
+  		</div>
+
+
+      </form>
+
+  	</div>
+<div class="col s4 l3">
+  	<ul id="nav-mobile" class="right">
+        <li><a href="/cart"> <span class="fa fa-shopping-cart fa-2x"></span>  </a></li>
+        <li><a href="/account"> <span class="fa fa-user fa-2x"></span>     </a></li>
+      </ul>
+</div>
+ 
+  </div>
+    </div>
+  </nav>
+  </div>
+
+
+	<div class="row">
+    <ul id="tabs-swipe-demo" class="tabs taba">
+    <li class="tab col s3"><a class="active" href="#test-swipe-1">Profile</a></li>
+    <li class="tab col s3"><a href="#test-swipe-2">Orders</a></li>
+    <li class="tab col s3"><a href="#test-swipe-3">Payment</a></li>
+    <li class="tab col s3"><a href="#test-swipe-4">Menu</a></li>
+  </ul>
+  
+
+  <div id="test-swipe-1" class="col s12">
+    <div class="row">
+      
+      <div class="col m1 l2"></div>
+     
+      <div class="col s12 m10 l8">
+        
+        
+          <div class="card">
+            <div class="card-image responsive-img">
+              <img src="abbey.jpg" class="lineUp responsive-img" />
+              <span class="card-title">Profile Photo</span>
+            </div>
+             
+            <div class="card-action center-align">
+            <input id="upload" type="file"/>
+              <a href="#" class="center-align" id="upload_link">Upload</a>
+            </div>
+          </div>
+       
+      </div>
+
+      <div class="l4"></div>
+    
+    </div>
+      <div class="row">
+         <div class="col s1 m2 l4"></div>
+        <div class="col s10 m8 l4">
+          
+<h3 class="center-align">The Abbey</h3>   
+  <h4 class="center-align">adam.howard@mycit.ie</h4>
+  
+  <form method="post" th:action="@{/chgPro}" th:object="${pubp}" name="formPro">
+  <a class="btn blue modal-trigger darken-1 btn-block" href="#modal4">Change Email</a>
+     
+
+     <div id="modal4" class="modal modalmail">
+      <div class="modal-content">
+        <div class="row">
+        <h4 class="center-align">Enter new Email Address</h4>
+            <div class="row modal-form-row">
+              <div class="input-field col s12">
+                  <input type="email" name="chgMail" id="chgMail" placeholder="New address" th:field="*{email}"/>
+              </div>
+            </div>
+          </div>
+      </div>
+    <div class="modal-footer">
+      <button name="sub1" type="submit" class="modal-action modal-close center-align btn-block btn btn-large blue darken-1 prodB">Change</button>
+    </div>
+  </div>
+
+  <br/>
+   <a class="btn modal-trigger blue darken-1 btn-block" href="#modal5">Change Password</a>
+   <br/>
+  <div id="modal5" class="modal modalmail">
+      <div class="modal-content">
+        <div class="row">
+        <h4 class="center-align">Change Password</h4>
+            <div class="row modal-form-row">
+              <div class="input-field col s12">
+                  <input type="Password" name="chgPass" id="chgPass" placeholder="Current"/> 
+                  <br/>
+                  <input type="Password" name="chgPassNew" id="chgPassNew" placeholder="New"/>
+                   <br/>
+                  <input type="Password" name="chgPassC" id="chgPassC" placeholder="Confirm New" th:field="*{password}"/>
+                   <br/>
+              </div>
+            </div>
+          </div>
+      </div>
+    <div class="modal-footer">
+      <button name="sub3" type="submit" class="modal-action modal-close center-align btn-block btn btn-large blue darken-1 prodB">Change</button>
+    </div>
+  </div>
+  
+  <h4 class="center-align">3 Jagerbombs for 10</h4> 
+  <a class="btn blue darken-1 modal-trigger btn-block" href="#modal6">Change Bio</a>
+
+  <div id="modal6" class="modal modalmail">
+      <div class="modal-content">
+        <div class="row">
+        <h4 class="center-align">Change Bio</h4>
+        <h5 class="center-align">Your bio is viewable to customers. It should contain promotional slogans to attract customers attention.</h5>
+            <div class="row modal-form-row">
+              <div class="input-field col s12">
+                  <input type="text" name="chgBio" id="chgPass" placeholder="New Bio" th:field="*{bio}"/> 
+                  
+                   <br/>
+              </div>
+            </div>
+          </div>
+      </div>
+    <div class="modal-footer">
+     <button name="sub2" type="submit" class="modal-action modal-close center-align btn-block btn btn-large blue darken-1 prodB">Change</button>
+    </div>
+  </div>
+  
+  <h4 class="center-align">SG1 RobbieG Tchami mup the boys</h4>
+  <a class="btn blue modal-trigger darken-1 btn-block" href="#modal7">Change Description</a>
+
+  <div id="modal7" class="modal modalmail">
+      <div class="modal-content">
+        <div class="row">
+        <h4 class="center-align">Change Description</h4>
+        <h5 class="center-align">Your description is viewable to customers. </h5>
+            <div class="row modal-form-row">
+              <div class="input-field col s12">
+                  <input type="text" name="chgDesc" id="chgDesc" placeholder="New Description" th:field="*{desc}"/> 
+                  
+                   <br/>
+              </div>
+            </div>
+          </div>
+      </div>
+    <div class="modal-footer">
+      <button name="sub1" type="submit" class="modal-action modal-close center-align btn-block btn btn-large blue darken-1 prodB">Change</button>
+    </div>
+  </div>
+  
+  </form>
+  <h4 class="center-align">Fermoy, Cork</h4>
+ 
+<a class="btn modal-trigger blue darken-1 btn-block" href="#modal3">Set Location</a>
+
+  
+  <!-- Modal Structure -->
+    <div id="modal3" class="modal modalPro">
+      <div class="modal-content">
+  
+        <div class="row">
+                    
+            <div class="row modal-form-row">
+              <div class="input-field col s12">
+                
+                <form action="#" onsubmit="showAddress(this.address.value); return false">
+      <div class="col s3"></div>
+      <div class="col s6">
+      <p style="margin: auto;">
+        Enter your address, then drag the marker to tweak the location.
+        <br/>
+        Your coordinates will then be displayed.
+      </p>
+      <p>
+        <input type="text" style="width:350px; margin: auto;" name="address" value="Cork"  placeholder="Address" />
+        <input type="submit" value="Go!" class="btn blue darken-1 btn-block"/>
+      </p>
+      </div>
+      <div id="map_canvas" style="width: 80%; height: 400px; margin: auto;"></div>
+    </form>
+              </div>
+            </div>
+                  
+        
+     
+  
+      </div>
+    
+    </div>
+    <div class="modal-footer">
+      <a class="modal-action modal-close center-align btn-block btn btn-large blue darken-1 prodB">Set</a>
+    </div>
+  </div>
+
+
+  <br/>
+
+  <a class="btn btn-block red">Logout</a>
+ 
+
+        </div>
+          <div class="col s1 m2 l4"></div>
+      </div>
+
+
+    
+  </div>
+
+  <div id="test-swipe-2" class="col s12">
+     <div class="row">
+         <div class="col s1 m2 l3"></div>
+          <div class="col s10 m8 l6">
+            <h3 class="or center-align">Order History</h3>
+            
+              <div class="cc">
+                <h3>The Abbey </h3>
+                <h4>Items - 2 Bulmers, 1 Jagerbomb and Coca Cola</h4>
+                <h4>Customer - Adam Howard</h4>
+                <h4>Email - Adam.Howard@mycit.ie</h4>
+                
+
+                <h4>Total - <span class="fa fa-euro"></span> 10.40</h4>
+                <h4>Order Number - 3113</h4>
+          
+                <h4>Card Number - 431987323911022</h4>
+                <span class="fa fa-cc-visa right fa-4x"></span>
+                <h4 class="">CVV - 987</h4>
+                
+                <h4>Expiry - 0118</h4>
+
+               
+              </div>
+              
+              
+              
+          </div>
+          <div class="col s1 m2 l4"></div>
+    </div>
+
+
+  </div>
+  <div id="test-swipe-3" class="col s12">
+    <div class="row">
+         <div class="col s1 m2 l4"></div>
+          <div class="col s10 m8 l4">
+            <h3 class="or center-align">Saved Payment Accounts</h3>
+            <br/>
+              <div class="cc">
+                <h3>VISA Debit</h3>
+
+                <h4>Card Number - 431987323911022</h4>
+                <span class="fa fa-cc-visa right fa-4x"></span>
+                <h4 class="">CVV - 987</h4>
+                
+                <h4>Expiry - 0118</h4>
+
+               
+              </div>
+              
+              <div class="cc">
+                <h3>VISA Debit</h3>
+
+                <h4>Card Number - 431987323911022</h4>
+                <span class="fa fa-cc-visa right fa-4x"></span>
+                <h4 class="">CVV - 987</h4>
+                
+                <h4>Expiry - 0118</h4>
+
+               
+              </div>
+              
+          </div>
+          <div class="col s1 m2 l4"></div>
+    </div>
+
+    <div class="row">
+         <div class="col s1 m2 l4"></div>
+          <div class="col s10 m8 l4">
+                    <a class="btn modal-trigger blue darken-1 btn-block" href="#modal1">Add Payment Method</a>
+
+  
+  <!-- Modal Structure -->
+    <div id="modal1" class="modal">
+      <div class="modal-content">
+        <h4 class="center-align">Add Payment Method</h4>
+
+        <div class="row">
+          <form class="col s12" id="form1" name="form1" action="/addP">
+          
+            <div class="row modal-form-row">
+              <div class="input-field col s12">
+                <input id="card_num" type="text" class="validate" placeholder="Card Number"></input>
+  
+              </div>
+            </div>
+          
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="card_cvv" type="text" class="validate" placeholder="CVV"></input>
+            
+            </div>
+          </div>       
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="card_expiry" type="text" class="validate" placeholder="Expiry"></input>
+    
+            </div>
+          </div>
+           <div class="row modal-form-row">
+              <div class="input-field col s12">
+                <input id="card_name" type="text" class="validate" placeholder="Card Holder"></input>
+  
+              </div>
+            </div>
+        </form>
+      </div>
+    
+    </div>
+    <div class="modal-footer">
+      <a class="modal-action modal-close blue btn darken-1 btn-block">Add</a>
+    </div>
+  </div>
+          </div>
+          <div class="col s1 m2 l4"></div>
+        
+
+    </div>
+
+
+  </div>
+
+  <div id="test-swipe-4" class="col s12">
+  <div class="row">
+  <div class="deck">
+   
+   <div class="col l3"></div>
+	<div class="col s6 l3">
+
+			<div class="card-panel hoverable" th:each="p : ${men1}">
+  <div class="card-header">
+    <img src="bulmers.jpg" class="responsive-img" th:src="${p.image}"/>
+  </div>
+  <div class="card-content">
+    <h3 class="center-align" th:text="${p.name}">Bulmers</h3>
+    <h3 class="center-align" style="margin-top: 10px; color:  #FF5252;"><i class="fa fa-euro"></i><span th:text="${p.price}"></span></h3>
+    <h4 class="center-align" th:text="${p.desc}" style="margin-top: 10px; color: black;" id="desc">The Forge, Duntaheen Road </h4>
+  </div>
+  <div class="card-footer">
+  	<form method="post" th:object="${product}" th:action="@{/rmCart}" th:name="form + ${p.id}">
+   <input type="hidden" th:value="${p.id}" name="hiddenid"></input>
+   <input type="hidden" th:value="${thisPub}" name="pubid"></input>
+   <button type="submit" class="btn btn-block red" style="width: 100%;">Remove <i class="fa fa-times"></i></button>
+  	</form>
+  
+  </div>
+</div>
+
+</div>
+
+<div class="col s6 l3">
+
+		<div class="card-panel hoverable" th:each="p : ${men2}">
+  <div class="card-header">
+    <img src="bulmers.jpg" class="responsive-img" th:src="${p.image}"/>
+  </div>
+  <div class="card-content">
+    <h3 class="center-align" th:text="${p.name}">Bulmers</h3>
+    <h3 class="center-align" style="margin-top: 10px; color:  #FF5252;"><i class="fa fa-euro"></i><span th:text="${p.price}"></span></h3>
+    <h4 class="center-align" th:text="${p.desc}" style="margin-top: 10px; color: black;" id="desc">The Forge, Duntaheen Road </h4>
+  </div>
+  <div class="card-footer">
+  	<form method="post" th:object="${product}" th:action="@{/rmCart}" th:name="form + ${p.id}">
+   <input type="hidden" th:value="${p.id}" name="hiddenid"></input>
+   <input type="hidden" th:value="${thisPub}" name="pubid"></input>
+   <button type="submit" class="btn btn-block red" style="width: 100%;">Remove <i class="fa fa-times"></i></button>
+  	</form>
+  
+  </div>
+</div>
+
+
+
+</div>
+ <div class="col l3"></div>
+   
+   
+   
+   
+   
+   </div>
+   </div>
+
+   <div class="row">
+    <div class="col s1 m2 l4"></div>
+     <div class="col s10 m8 l4">
+        <a class="btn modal-trigger blue darken-1 btn-block" href="#modal2">Add Product</a>
+
+  
+  <!-- Modal Structure -->
+    <div id="modal2" class="modal modalProd">
+      <div class="modal-content">
+        <h4 class="center-align">Add to the Menu</h4>
+        <div class="row">
+         <div class="col s3 m4 l5"></div>
+<div class="col s6 m4 l2"><a class='dropdown-button btn-block blue darken-1 btn' href='#' data-activates='dropdown1'>Select Preset</a></div>
+          
+
+  <!-- Dropdown Structure -->
+  <ul id='dropdown1' class='dropdown-content'>
+    <li><a class="bb" href="#!">Bulmers</a></li>
+    <li><a href="#!">Heineken</a></li>
+    
+  </ul>
+
+        </div>
+        <div class="row">
+          <form class="col s12" id="form2" enctype="multipart/form-data" method="post"  name="form2" th:object="${product}" th:action="@{/addMenu}">
+          
+            <div class="row modal-form-row">
+              <div class="input-field col s12">
+                <input type="text" id="p_title" name="title" class="validate" placeholder="Title" th:field="*{name}"/>
+                
+              </div>
+            </div>
+          
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="p_desc" type="text" class="validate" name="desc" placeholder="Description" th:field="*{desc}"/>
+            
+            </div>
+          </div>       
+          <div class="row">
+            <div class="input-field col s12">
+              <i class="fa fa-euro"></i>
+              <input id="p_price" type="text" class="validate" name="price" placeholder="Price" th:field="*{price}"></input>
+              
+            </div>
+          </div>   
+         
+          <div class="row">
+            <div class="input-field col s12">
+             <div class="aline">
+              <img class="p_file responsive-img linup"/>
+               </div>
+            </div>
+          </div>             
+        
+      <div class = "row">
+               <label>Product Image</label>
+               <div class = "file-field input-field">
+                  <div class = "btn blue darken-1">
+                     <span>Browse</span>
+                     
+                     <input type="file" id="p_file" name="d_file" th:field="*{imageData}"/>
+
+                  </div>
+                  
+                  <div class = "file-path-wrapper">
+                     <input class = "file-path validate" type = "text"
+                        placeholder = "Upload file" />
+                  </div>
+               </div>
+            </div>
+
+        </form>
+      </div>
+    
+    </div>
+    <div class="modal-footer">
+      <button type="button" id="sub" class="modal-action modal-close center-align btn-block btn btn-large blue darken-1 prodB">Add</button>
+    </div>
+  </div>
+
+     </div>
+   </div>
+  <div class="col s3"></div>
+  </div>
+
+
+
+</div>
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+ <script type="text/javascript">
+ 
+  $(function(){
+    $("#upload_link").on('click', function(e){
+        e.preventDefault();
+        $("#upload:hidden").trigger('click');
+    });
+});
+
+ $(document).ready(function(){
+ 
+ $('#sub').click(function(){
+	$("#form2").submit();
+});
+        
+    $('.bb').click(function(){
+            $('#p_title').val("Bulmers");  
+        $('#p_desc').val("Bulmers is the best cider"); 
+        $('#p_price').val("4.50");  
+        $('.p_file').attr('src','bulmers.jpg');   
+      });
+
+
+    $('ul.tabs').tabs();
+     $('.modal').modal();
+     $('.modal-trigger').leanModal();
+
+     $('#search').focus();
+     $('#search').select();
+
+      
+  
+
+      $('.dropdown-button').dropdown({
+      inDuration: 300,
+      outDuration: 225,
+      constrainWidth: false, // Does not change width of dropdown to that of the activator
+      hover: true, // Activate on hover
+      gutter: 0, // Spacing from edge
+      belowOrigin: false, // Displays dropdown below the button
+      alignment: 'left', // Displays dropdown with edge aligned to the left of button
+      stopPropagation: false // Stops event propagation
+    }
+  );
+   
+  });
+</script>
+
+</body>
+
+
+
+</html>
+
+
+

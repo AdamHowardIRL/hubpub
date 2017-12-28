@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"></meta>
+  <title>Login</title>
+  
+  <meta name="google-signin-client_id" content="589036248286-oo9g584sfdobepqhkm6lkd34r701ko1t.apps.googleusercontent.com"></meta>
+  <script src="https://apis.google.com/js/platform.js" async='async' defer='defer'></script>
+      <link rel="stylesheet" href="css/style.css"/>
+      <link rel="stylesheet" href="
+      style.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"/>
+
+<script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDd-6LOvqYQ_gcPMhpeZ5Ren2MJIfOGgkU",
+    authDomain: "pubhub-c3a5a.firebaseapp.com",
+    databaseURL: "https://pubhub-c3a5a.firebaseio.com",
+    projectId: "pubhub-c3a5a",
+    storageBucket: "pubhub-c3a5a.appspot.com",
+    messagingSenderId: "589036248286"
+  };
+  firebase.initializeApp(config);
+
+  function checkLoginState() {
+    FB.getLoginStatus(function(response) {
+      statusChangeCallback(response);
+    });
+  }
+
+  window.fbAsyncInit = function() {
+  FB.init({
+    appId      : '202250303682070',
+    cookie     : true,  // enable cookies to allow the server to access 
+                        // the session
+    xfbml      : true,  // parse social plugins on this page
+    version    : 'v2.8' // use graph api version 2.8
+  });
+
+  // Now that we've initialized the JavaScript SDK, we call 
+  // FB.getLoginStatus().  This function gets the state of the
+  // person visiting this page and can return one of three states to
+  // the callback you provide.  They can be:
+  //
+  // 1. Logged into your app ('connected')
+  // 2. Logged into Facebook, but not your app ('not_authorized')
+  // 3. Not logged into Facebook and can't tell if they are logged into
+  //    your app or not.
+  //
+  // These three cases are handled in the callback function.
+
+  FB.getLoginStatus(function(response) {
+    statusChangeCallback(response);
+  });
+
+  };
+
+  function testAPI() {
+    console.log('Welcome!  Fetching your information.... ');
+    FB.api('/me', function(response) {
+      console.log('Successful login for: ' + response.name);
+      document.getElementById('status').innerHTML =
+        'Thanks for logging in, ' + response.name + '!';
+    });
+  }
+</script>
+
+</head>
+
+<body>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = 'https://connect.facebook.net/en_GB/sdk.js#xfbml=1&amp;version=v2.11';
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+  <div class="login-page">
+   
+  <div class="form lim">
+     <img src="logo.png" id="wel"/>
+    <form class="register-form lim" th:object="${user}" th:action="@{/register}" method="POST">
+    
+      <input type="text" placeholder="Name" th:field="*{name}"/>
+      <input type="text" placeholder="Email address" th:field="*{email}"/>
+      <input type="password" placeholder="Password" th:field="*{password}"/>
+     <p>
+      <input th:type="checkbox" name="owner" id="pubowner" th:value="true" th:checked="${isPub}" />
+
+      <label for="pubowner">Pub owner?</label>
+    </p>
+      <br/>
+      <br/>
+      <button class="blue" type="submit" id="cr">create</button>
+      <p class="message">Already registered? <a href="#">Sign In</a></p>
+    </form>
+    <form class="login-form lim" th:object="${user}" th:action="@{/login}" method="POST">
+      <input type="text" name="user" placeholder="Username/email" th:field="*{name}"/>
+      <input type="password" placeholder="Password" th:field="*{password}"/>
+      <button type="submit" class="blue">login</button>
+      <p class="message">Not registered? <a href="#">Create an account</a></p>
+      <div class="g-signin2 btn-block pd" data-onsuccess="onSignIn"></div>
+      <div class="fb-login-button pd" data-max-rows="1" data-size="large" data-button-type="login_with" data-show-faces="true" data-auto-logout-link="false" data-use-continue-as="true"></div>
+      <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+</fb:login-button>
+
+    </form>
+
+
+  </div>
+ 
+</div>
+ 
+</body>
+
+<script
+  src="https://code.jquery.com/jquery-3.2.1.js"
+  integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+  crossorigin="anonymous"></script>
+
+
+
+<script  src="js/index.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+</html>
