@@ -66,7 +66,7 @@
   
 <div class="row">
 
-  <nav class="blue">
+  <nav class="grey darken-4">
 
     <div class="nav-wrapper">
     <div class="row">
@@ -78,17 +78,22 @@
 	<div class="col s2 l2"><span class="fa fa-search right in"></span></div>
     <div class="col s4 l5">
 	
-      <form class="blue">
+      <form class="grey darken-4"  th:action="@{/search}" method="GET">
       	<div class="header-search-wrapper">
 
-      	
-          <input id="search" type="search" placeholder=" Search Pubs" class="header-search-input z-depth-2 s"></input>
+      	<div class="row"></div>
+      	<div class="col s11">
+          <input id="search" type="text" placeholder=" Search Pubs" style="margin-top: 10px" class="header-search-input z-depth-2 s" autofocus="autofocus" onfocus="this.select()" name="q"/>
           
+          
+           </div>
+           <div class="col s1">
+          <button type="submit" style="margin-top: 12px" class="btn grey darken-1 btn-block"><span class="fa fa-search"></span> </button>
+         </div>
   		</div>
 
 
       </form>
-
   	</div>
 <div class="col s4 l3">
   	<ul id="nav-mobile" class="right">
@@ -104,7 +109,7 @@
 
 
 	<div class="row">
-    <ul id="tabs-swipe-demo" class="tabs taba">
+    <ul id="tabs-swipe-demo" class="tabs taba grey darken-4">
     <li class="tab col s3"><a class="active" href="#test-swipe-1">Profile</a></li>
     <li class="tab col s3"><a href="#test-swipe-2">Orders</a></li>
     <li class="tab col s3"><a href="#test-swipe-3">Payment</a></li>
@@ -122,7 +127,7 @@
         
           <div class="card">
             <div class="card-image responsive-img">
-              <img src="abbey.jpg" class="lineUp responsive-img" />
+              <img src="abbey.jpg" th:src="${im}" class="lineUp responsive-img" />
               <span class="card-title">Profile Photo</span>
             </div>
              
@@ -141,8 +146,8 @@
          <div class="col s1 m2 l4"></div>
         <div class="col s10 m8 l4">
           
-<h3 class="center-align">The Abbey</h3>   
-  <h4 class="center-align">adam.howard@mycit.ie</h4>
+<h3 class="center-align" th:text="${nme}">The Abbey</h3>   
+  <h4 class="center-align" th:text="${em}">adam.howard@mycit.ie</h4>
   
   <form method="post" th:action="@{/chgPro}" th:object="${pubp}" name="formPro">
   <a class="btn blue modal-trigger darken-1 btn-block" href="#modal4">Change Email</a>
@@ -188,7 +193,7 @@
     </div>
   </div>
   
-  <h4 class="center-align">3 Jagerbombs for 10</h4> 
+  <h4 class="center-align" th:text="${bio}">3 Jagerbombs for 10</h4> 
   <a class="btn blue darken-1 modal-trigger btn-block" href="#modal6">Change Bio</a>
 
   <div id="modal6" class="modal modalmail">
@@ -210,7 +215,7 @@
     </div>
   </div>
   
-  <h4 class="center-align">SG1 RobbieG Tchami mup the boys</h4>
+  <h4 class="center-align" th:text="${bio}">Desc</h4>
   <a class="btn blue modal-trigger darken-1 btn-block" href="#modal7">Change Description</a>
 
   <div id="modal7" class="modal modalmail">
@@ -233,7 +238,7 @@
   </div>
   
   </form>
-  <h4 class="center-align">Fermoy, Cork</h4>
+  <h4 class="center-align" th:text="${loc}">Fermoy, Cork</h4>
  
 <a class="btn modal-trigger blue darken-1 btn-block" href="#modal3">Set Location</a>
 
@@ -296,21 +301,18 @@
           <div class="col s10 m8 l6">
             <h3 class="or center-align">Order History</h3>
             
-              <div class="cc">
-                <h3>The Abbey </h3>
-                <h4>Items - 2 Bulmers, 1 Jagerbomb and Coca Cola</h4>
-                <h4>Customer - Adam Howard</h4>
-                <h4>Email - Adam.Howard@mycit.ie</h4>
+              <div class="cc" th:each="o : ${orders}">
+                <h3 th:text="${nme}">The Abbey </h3>
+                <h4 th:text="${o.itemStr}">Items - 2 Bulmers, 1 Jagerbomb and Coca Cola</h4>
+                <h4 th:text="${o.customerName}">Customer - Adam Howard</h4>
+                <h4 th:text="${o.customerEmail}">Email - Adam.Howard@mycit.ie</h4>
                 
 
-                <h4>Total - <span class="fa fa-euro"></span> 10.40</h4>
-                <h4>Order Number - 3113</h4>
+                <h4 th:text="${o.total}">Total - <span class="fa fa-euro"></span> 10.40</h4>
+                <h4 th:text="${o.orderNumber}">Order Number - 3113</h4>
           
-                <h4>Card Number - 431987323911022</h4>
-                <span class="fa fa-cc-visa right fa-4x"></span>
-                <h4 class="">CVV - 987</h4>
+                <h4 th:text="${o.cardNumber}">Card Number - 431987323911022</h4>
                 
-                <h4>Expiry - 0118</h4>
 
                
               </div>
@@ -430,7 +432,7 @@
     <h4 class="center-align" th:text="${p.desc}" style="margin-top: 10px; color: black;" id="desc">The Forge, Duntaheen Road </h4>
   </div>
   <div class="card-footer">
-  	<form method="post" th:object="${product}" th:action="@{/rmCart}" th:name="form + ${p.id}">
+  	<form method="post" th:object="${product}" th:action="@{/rmMenu}" th:name="form + ${p.id}">
    <input type="hidden" th:value="${p.id}" name="hiddenid"></input>
    <input type="hidden" th:value="${thisPub}" name="pubid"></input>
    <button type="submit" class="btn btn-block red" style="width: 100%;">Remove <i class="fa fa-times"></i></button>
@@ -443,19 +445,20 @@
 
 <div class="col s6 l3">
 
-		<div class="card-panel hoverable" th:each="p : ${men2}">
+<div class="card-panel hoverable" th:each="p : ${men2}">
   <div class="card-header">
     <img src="bulmers.jpg" class="responsive-img" th:src="${p.image}"/>
   </div>
+  
   <div class="card-content">
     <h3 class="center-align" th:text="${p.name}">Bulmers</h3>
     <h3 class="center-align" style="margin-top: 10px; color:  #FF5252;"><i class="fa fa-euro"></i><span th:text="${p.price}"></span></h3>
     <h4 class="center-align" th:text="${p.desc}" style="margin-top: 10px; color: black;" id="desc">The Forge, Duntaheen Road </h4>
   </div>
   <div class="card-footer">
-  	<form method="post" th:object="${product}" th:action="@{/rmCart}" th:name="form + ${p.id}">
-   <input type="hidden" th:value="${p.id}" name="hiddenid"></input>
-   <input type="hidden" th:value="${thisPub}" name="pubid"></input>
+  	<form method="post" th:object="${product}" th:action="@{/rmMenu}" th:name="form + ${p.id}">
+   		<input type="hidden" th:value="${p.id}" name="hiddenid"></input>
+   		<input type="hidden" th:value="${thisPub}" name="pubid"></input>
    <button type="submit" class="btn btn-block red" style="width: 100%;">Remove <i class="fa fa-times"></i></button>
   	</form>
   
@@ -492,7 +495,19 @@
   <!-- Dropdown Structure -->
   <ul id='dropdown1' class='dropdown-content'>
     <li><a class="bb" href="#!">Bulmers</a></li>
-    <li><a href="#!">Heineken</a></li>
+    <li><a class="bd" href="#!">Budweiser</a></li>
+    <li><a class="gu" href="#!">Guiness</a></li>
+    <li><a class="mu" href="#!">Murphys</a></li>
+    <li><a class="ot" href="#!">Orchard Thieves</a></li>
+    <li><a class="jb" href="#!">Jagerbomb</a></li>
+    <li><a class="jm" href="#!">Jagermeister</a></li>
+    <li><a class="bm" href="#!">Beamish</a></li>
+    <li><a class="cc" href="#!">Coca Cola</a></li>
+    <li><a class="co" href="#!">Club Orange</a></li>
+    <li><a class="rw" href="#!">Red Wine</a></li>
+    <li><a class="si" href="#!">Smirnoff Ice</a></li>
+    <li><a class="jd" href="#!">Jack Daniels</a></li>
+    <li><a class="he" href="#!">Heineken</a></li>
     
   </ul>
 
@@ -524,7 +539,7 @@
           <div class="row">
             <div class="input-field col s12">
              <div class="aline">
-              <img class="p_file responsive-img linup"/>
+              <img class="p_file" style="width: 90%"/>
                </div>
             </div>
           </div>             
@@ -541,7 +556,7 @@
                   
                   <div class = "file-path-wrapper">
                      <input class = "file-path validate" type = "text"
-                        placeholder = "Upload file" />
+                        placeholder = "Upload file" id="d_name" th:field="*{image}"/>
                   </div>
                </div>
             </div>
@@ -588,7 +603,72 @@
             $('#p_title').val("Bulmers");  
         $('#p_desc').val("Bulmers is the best cider"); 
         $('#p_price').val("4.50");  
+        $('#p_file').attr('src','bulmers.jpg');   
+        $('#p_file').attr('value','bulmers.jpg');
+        $('#d_name').attr('src','bulmers.jpg');   
+        $('#d_name').attr('value','bulmers.jpg');
         $('.p_file').attr('src','bulmers.jpg');   
+    
+      });
+      
+       $('.bd').click(function(){
+            $('#p_title').val("Bud");  
+        $('#p_desc').val("Budweiser"); 
+        $('#p_price').val("4.65");  
+        $('#p_file').attr('src','bud.jpg');   
+        $('#p_file').attr('value','bud.jpg');
+        $('#d_name').attr('src','bud.jpg');   
+        $('#d_name').attr('value','bud.jpg');
+        $('.p_file').attr('src','bud.jpg');   
+    
+      });
+      
+      $('.gu').click(function(){
+            $('#p_title').val("Guinness");  
+        $('#p_desc').val("Pint"); 
+        $('#p_price').val("4.25");  
+        $('#p_file').attr('src','guinness.jpg');   
+        $('#p_file').attr('value','guinness.jpg');
+        $('#d_name').attr('src','guinness.jpg');   
+        $('#d_name').attr('value','guinness.jpg');
+        $('.p_file').attr('src','guinness.jpg');   
+    
+      });
+      
+      $('.gu').click(function(){
+            $('#p_title').val("Guinness");  
+        $('#p_desc').val("Pint"); 
+        $('#p_price').val("4.25");  
+        $('#p_file').attr('src','guinness.jpg');   
+        $('#p_file').attr('value','guinness.jpg');
+        $('#d_name').attr('src','guinness.jpg');   
+        $('#d_name').attr('value','guinness.jpg');
+        $('.p_file').attr('src','guinness.jpg');   
+    
+      });
+     
+      $('.mu').click(function(){
+            $('#p_title').val("Murphys");  
+        $('#p_desc').val("Pint"); 
+        $('#p_price').val("4.75");  
+        $('#p_file').attr('src','mur.jpg');   
+        $('#p_file').attr('value','mur.jpg');
+        $('#d_name').attr('src','mur.jpg');   
+        $('#d_name').attr('value','mur.jpg');
+        $('.p_file').attr('src','mur.jpg');   
+    
+      });
+      
+      $('.ot').click(function(){
+            $('#p_title').val("Orchard Thieves");  
+        $('#p_desc').val("Pint"); 
+        $('#p_price').val("4.85");  
+        $('#p_file').attr('src','or.jpg');   
+        $('#p_file').attr('value','or.jpg');
+        $('#d_name').attr('src','or.jpg');   
+        $('#d_name').attr('value','or.jpg');
+        $('.p_file').attr('src','or.jpg');   
+    
       });
 
 

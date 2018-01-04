@@ -10,6 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Date;
+
 import org.apache.commons.io.FileUtils;
 
 import javax.servlet.http.Cookie;
@@ -78,6 +80,8 @@ public class PubhubController {
 		ses.removeAttribute("cart1");
 		ses.removeAttribute("cart2");
 		
+		
+		model.addAttribute("card", new Card());
 		status.setComplete();
 		
 		ArrayList<Product> res1 = new ArrayList<Product>();
@@ -114,7 +118,7 @@ public class PubhubController {
 
 	
 	@RequestMapping("/account")
-    public String acc(@CookieValue(value = "pid", required = false) String pid, @CookieValue(value = "acc", required = false) String acc,@CookieValue(value = "pub", required = false) String pub, @ModelAttribute Product prod, BindingResult br, Model model, HttpSession ses) {
+    public String acc(@CookieValue(value = "did", required = false) String pid, @CookieValue(value = "acc", required = false) String acc,@CookieValue(value = "pub", required = false) String pub, @ModelAttribute Product prod, BindingResult br, Model model, HttpSession ses) throws CloneNotSupportedException {
  
         model.addAttribute("product", prod);
         model.addAttribute("pubp", new Pub());
@@ -127,15 +131,37 @@ public class PubhubController {
         ArrayList<Product> men2 = new ArrayList<Product>();
         ArrayList<Product> tmp = new ArrayList<Product>();
         
+        Pub current = null;
+        User currentU = null;
+        
+        
+        
         try {
         	for(Pub p : pubs) {
             	if(p.getId() == Integer.parseInt(pid)) {
             		tmp = p.getMenu();
+            		current = (Pub) p.clone();
             	}
             }
         } catch (Exception e) {
         	
         }
+        try {
+        	ArrayList<Order> o = new ArrayList<Order>();
+            o = current.getOrders();
+            
+        } catch (Exception e) {
+        	
+        }
+        
+        
+        for(User u : users) {
+        	if(u.getId() == Integer.parseInt(acc)) {
+        		currentU = (User) u.clone();
+        	}
+        }
+        
+        
         
         try {
         	int maxPubs = tmp.size();
@@ -156,22 +182,35 @@ public class PubhubController {
 		
         
 		try {
-			if(Integer.parseInt(pub) == 22)
+			if(Integer.parseInt(pub) == 22) {
+				model.addAttribute("nme", current.getName());
+				model.addAttribute("bio", current.getBio());
+				model.addAttribute("desc", current.getDesc());
+				model.addAttribute("loc", current.getLocation());
+				model.addAttribute("em", current.getEmail());
+				model.addAttribute("im", current.getImage());
+				model.addAttribute("current", current);
+				model.addAttribute("orders", current.getOrders());
 				return "account";
+			}
 
 		} catch(Exception e) {
 
 		}
 
 		try {
-			if(Integer.parseInt(acc) >= 0)
+			if(Integer.parseInt(acc) >= 0) {
+				model.addAttribute("orders", currentU.getOrders());
+			}
+				
 				return "acc";
 
 		} catch (Exception e) {
 
-		}
 
-       return "no user";
+		}
+				
+       return "log";
     } 
 	
 	@RequestMapping("/home")
@@ -425,14 +464,127 @@ public class PubhubController {
 		
         return "cart";
     }
-	@RequestMapping("/pay")
-    public String pay(Model model) {
-        model.addAttribute("message", "Hello from Spring MVC Thymeleaf!");
-        return "index";
+	@RequestMapping(value = "/pay", method = { RequestMethod.GET, RequestMethod.POST })
+    public String pay(@ModelAttribute Card c,@CookieValue(value = "pay", required = false) String uid,Model model) throws CloneNotSupportedException {
+        model.addAttribute("card",c);
+        
+        System.out.println(c.getCardNumber());
+        System.out.println(c.getCardHolder());
+        System.out.println(c.getCvv());
+        System.out.println(c.getExpiry());
+        
+        
+        String cn = c.getCardNumber();
+        int cv = c.getCvv();
+        String ex = c.getExpiry();
+        String ch = c.getCardHolder();
+        
+        User current = null;
+        try {
+        	for(User u : users) {
+            	if(u.getId() == Integer.parseInt(uid)) {
+            		try {
+    					current = (User) u.clone();
+    				} catch (CloneNotSupportedException e) {
+    					e.printStackTrace();
+    				}
+            	}
+            }
+        } catch (Exception e) {
+        	
+        }
+        
+        
+        ArrayList<Product> cart = new ArrayList<Product>();
+        
+        cart = (ArrayList<Product>) current.getCart().clone();
+        
+        ArrayList<Order> o = new ArrayList<Order>();
+        
+        int numPubs = 0;
+        
+        int curr = 0;
+        
+        ArrayList<Pub> toGo = new ArrayList<Pub>();
+        
+        
+       
+        
+        
+        for(Product p : cart) {
+        	if(p.getPubId() > curr) {
+        		curr = p.getPubId();
+        		numPubs++;
+        		toGo.add(getPubById(p.getPubId()));
+        	}
+        }
+        
+        for(Pub s : toGo) {
+        	for(Pub p : pubs) {
+        		if(s.getId() == p.getId()) {
+        			Order or = new Order(p.genOrderId());
+        			or.setPub(p);
+        			or.setItems(getCartByPub(p, cart));
+        			or.setAmount(Float.toString(totalCart(getCartByPub(p, cart))));
+        			or.setOrderNumber(p.genOrderId());
+        			or.setCustomer(current);
+        			or.setTime(new Date());
+        			or.setPaymentInfo(c);
+        			p.addOrder(or);
+        			User u = getUserById(current.getId());
+        			u.addOrder(or);
+               		}
+        	}
+        }
+        
+       
+        
+        
+        
+        System.out.println(numPubs);
+        
+        
+        
+        
+        
+        
+        
+        Product p;
+        
+       
+        
+        return "cart";
     }
 	
+	public Pub getPubById(int id) throws CloneNotSupportedException {
+		for(Pub p : pubs) {
+			if(p.getId() == id)
+				return (Pub) p.clone();
+		}
+		return null;
+	}
+	public User getUserById(int id) throws CloneNotSupportedException {
+		for(User p : users) {
+			if(p.getId() == id)
+				return (User) p.clone();
+		}
+		return null;
+	}
+	
+	
+	public ArrayList<Product> getCartByPub(Pub p, ArrayList<Product> cart){
+		ArrayList<Product> res = new ArrayList<Product>();
+		for(Product pe : cart) {
+			if(pe.getPubId() == p.getId()) {
+				res.add(pe);
+			}
+		}
+		return res;
+		
+	}
+	
 	@RequestMapping("/login")
-    public String login(@CookieValue(value = "id", required = false) String id,@CookieValue(value = "pid", required = false) String pid, @ModelAttribute User user, BindingResult br, Model model, SessionStatus status, HttpSession ses, HttpServletResponse response) {
+    public String login(@CookieValue(value = "lid", required = false) String id,@CookieValue(value = "pid", required = false) String pid, @ModelAttribute User user, BindingResult br, Model model, SessionStatus status, HttpSession ses, HttpServletResponse response) {
 		User u = new User();
 		u.setName(user.getName());
 		model.addAttribute("user", u);
@@ -510,6 +662,18 @@ public class PubhubController {
 					Cookie c = new Cookie("cid", Integer.toString(a.getId()));
 					c.setPath("/cart");
 					response.addCookie(c);
+					
+					
+					Cookie cp = new Cookie("pay", Integer.toString(a.getId()));
+					cp.setPath("/pay");
+					cp.setMaxAge(60*24);
+					response.addCookie(cp);
+					
+					Cookie cp1 = new Cookie("plid", Integer.toString(a.getId()));
+					cp1.setPath("/login");
+					cp1.setMaxAge(60*24);
+					response.addCookie(cp1);
+					
 					Cookie c3 = new Cookie("usid", Integer.toString(a.getId()));
 					c3.setPath("/rmCart");
 					response.addCookie(c3);
@@ -519,11 +683,12 @@ public class PubhubController {
 					Cookie g = new Cookie("acc", Integer.toString(a.getId()));
 					g.setPath("/account");
 					response.addCookie(g);
-					Cookie c1 = new Cookie("pid", null);
+					Cookie c1 = new Cookie("pcid", null);
 					c1.setPath("/cart");
 					c1.setMaxAge(0);
 					response.addCookie(c);
-					Cookie d1 = new Cookie("pid", null);
+					
+					Cookie d1 = new Cookie("pacid", null);
 					d.setPath("/addCart");
 					d1.setMaxAge(0);
 					response.addCookie(d1);
@@ -535,11 +700,11 @@ public class PubhubController {
 					q1.setPath("/account");
 					q1.setMaxAge(0);
 					response.addCookie(q1);
-					Cookie f1 = new Cookie("pid", null);
+					Cookie f1 = new Cookie("ppid", null);
 					f1.setPath("/addPub");
 					f1.setMaxAge(0);
 					response.addCookie(f1);
-					Cookie g1 = new Cookie("pid", null);
+					Cookie g1 = new Cookie("pmid", null);
 					g1.setPath("/addMenu");
 					g1.setMaxAge(0);
 					response.addCookie(g1);
@@ -555,13 +720,14 @@ public class PubhubController {
 				if(b.getEmail().equalsIgnoreCase(email) && b.getPassword().equals(pass)) {
 						activePubs.add((Pub) b.clone());
 						
+					
+						
 						Cookie e2 = new Cookie("paid", null);
 						e2.setPath("/account");
 						e2.setMaxAge(0);
 						response.addCookie(e2);
 						Cookie q2 = new Cookie("pub", null);
 						q2.setPath("/account");
-						q2.setMaxAge(0);
 						response.addCookie(q2);
 						Cookie g2 = new Cookie("pbid", null);
 						g2.setPath("/addMenu");
@@ -581,6 +747,16 @@ public class PubhubController {
 						e.setMaxAge(60*24);
 						response.addCookie(e);
 						
+						Cookie eff = new Cookie("did", Integer.toString(b.getId()));
+						eff.setPath("/account");
+						eff.setMaxAge(60*24);
+						response.addCookie(eff);
+						
+						Cookie ef = new Cookie("lid", Integer.toString(b.getId()));
+						ef.setPath("/login");
+						ef.setMaxAge(60*24);
+						response.addCookie(ef);
+						
 				
 						
 						Cookie g12 = new Cookie("ppid", Integer.toString(b.getId()));
@@ -592,6 +768,10 @@ public class PubhubController {
 						q.setPath("/account");
 						q.setMaxAge(60*24);
 						response.addCookie(q);
+						Cookie q3 = new Cookie("prid", Integer.toString(b.getId()));
+						q3.setPath("/rmMenu");
+						q3.setMaxAge(60*24);
+						response.addCookie(q3);
 						Cookie f = new Cookie("puid", Integer.toString(b.getId()));
 						f.setPath("/addPub");
 						f.setMaxAge(60*24);
@@ -739,6 +919,8 @@ public class PubhubController {
     public String menu(@ModelAttribute("p") Pub pub, @RequestParam("hiddenid") int id,Model model, SessionStatus status, HttpSession ses) {
         model.addAttribute("p", pub);
         
+        
+        
         System.out.println(id);
         ArrayList<Product> current = null;
         int maxPubs = 0;
@@ -746,7 +928,7 @@ public class PubhubController {
         try {
         	for(Pub u : pubs) {
             	if(u.getId() == id) {
-            		current = u.getMenu();
+            		current = (ArrayList<Product>) u.getMenu().clone();
             	}
         	}	
         	maxPubs = current.size();
@@ -827,14 +1009,30 @@ public class PubhubController {
         return "menu";
     }
 	
-	@RequestMapping("/removemenu")
-    public String rmMenu(Model model) {
-        model.addAttribute("message", "Hello from Spring MVC Thymeleaf!");
-        return "index";
+	@RequestMapping("/rmMenu")
+    public String rmMenu(@RequestParam("hiddenid") int id,  @CookieValue(value = "prid", required = false) String pid,Model model) {
+		try {
+			for(Pub p : pubs) {
+				if(p.getId() == Integer.parseInt(pid)) {
+					p.removeMenu(id);
+				}
+			}
+		} catch (Exception e) {	
+		}
+		
+      	model.addAttribute("product", new Product());
+        return "account";
     }
 	
-	@RequestMapping("/search")
-    public String search(Model model) {
+	@RequestMapping(value = "/search", method = { RequestMethod.GET, RequestMethod.POST })
+    public String search(@ModelAttribute String s,@RequestParam("q") String q,Model model) {
+		
+		ArrayList<Pub> results = new ArrayList<Pub>();
+		
+		model.addAttribute("search", s);
+		
+		System.out.println(q);
+		
         //Search by pub name
 		
 		//Location
@@ -913,17 +1111,20 @@ public class PubhubController {
 			generated.setDesc(prod.getDesc());
 			generated.setPrice(prod.getPrice());
 			generated.setImage(prod.getImageData().getOriginalFilename());
+			generated.setImage(prod.getImage());
 			
 			System.out.println(prod.getName());
 			System.out.println(prod.getDesc());
 			System.out.println(prod.getPrice());
 			System.out.println(prod.getImageData().getSize());
 			System.out.println(prod.getImageData().getOriginalFilename());
+			System.out.println(prod.getImage());
 
 			for(Pub p : pubs) {
-				if(p.getId() == Integer.parseInt(pid))
+				if(p.getId() == Integer.parseInt(pid)) {
 					generated.setId(p.genNewMenuId());
 					p.addMenu(generated);
+				}
 			}
 
 		} catch (Exception e) {

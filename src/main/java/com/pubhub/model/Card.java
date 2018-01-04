@@ -6,12 +6,20 @@ public class Card {
 	int id;
 	
 	String cardHolder;
-	long cardNumber;
+	String cardNumber;
 	int cvv;
 	String expiry;
 	String time;
 	Date now;
 	
+	String type;
+	
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
 	public int getId() {
 		return id;
 	}
@@ -24,10 +32,10 @@ public class Card {
 	public void setCardHolder(String cardHolder) {
 		this.cardHolder = cardHolder;
 	}
-	public long getCardNumber() {
+	public String getCardNumber() {
 		return cardNumber;
 	}
-	public void setCardNumber(long cardNumber) {
+	public void setCardNumber(String cardNumber) {
 		this.cardNumber = cardNumber;
 	}
 	public int getCvv() {
@@ -59,7 +67,7 @@ public class Card {
 		
 	}
 	
-	public Card(int id, String cardHolder, long cardNumber, int cvv, String expiry, String time, Date now) {
+	public Card(int id, String cardHolder, String cardNumber, int cvv, String expiry, String time, Date now) {
 		super();
 		this.id = id;
 		this.cardHolder = cardHolder;

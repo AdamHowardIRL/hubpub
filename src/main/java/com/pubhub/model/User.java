@@ -14,8 +14,20 @@ public class User implements Cloneable{
 	float lat;
 	float lng;
 	String location;
+	String address;
 	public String isPub;
 	ArrayList<Product> cart = new ArrayList<Product>();
+	public ArrayList<Order> orders = new ArrayList<Order>();
+	
+	public ArrayList<Order> getOrders() {
+		return orders;
+	}
+	public void setOrders(ArrayList<Order> orders) {
+		this.orders = orders;
+	}
+	public void addOrder(Order o) {
+		orders.add(o);
+	}
 	
 	public ArrayList<Product> getCart() {
 		return cart;

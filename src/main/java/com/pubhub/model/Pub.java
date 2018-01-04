@@ -17,10 +17,19 @@ public class Pub implements Cloneable{
 	float lng;
 	String location;
 	boolean isPub;
+	String address;
 	ArrayList<Card> cards = new ArrayList<Card>();
 	ArrayList<Order> orders = new ArrayList<Order>();
 	MultipartFile imageData;
 	ArrayList<Product> menu = new ArrayList<Product>();
+	
+	public void addOrder(Order o) {
+		orders.add(o);
+	}
+	
+	public void removeMenu(int i) {
+		menu.remove(i);
+	}
 	
 	public int genNewMenuId() {
 		return menu.size() + 1;
@@ -163,6 +172,10 @@ public class Pub implements Cloneable{
 	
 	public ArrayList<Card> getCards(){
 		return cards;
+	}
+	
+	public int genOrderId() {
+		return orders.size() + 1;
 	}
 	
 	

@@ -34,6 +34,8 @@
             } else {
               map.setCenter(point, 15);
               var marker = new GMarker(point, {draggable: true});
+              document.getElementById("lt").value = marker.getLatLng();
+              document.getElementById("lg").value = marker.getLatLng();
               map.addOverlay(marker);
               GEvent.addListener(marker, "dragend", function() {
                 marker.openInfoWindowHtml(marker.getLatLng().toUrlValue(6));
@@ -66,7 +68,7 @@
   
 <div class="row">
 
-  <nav class="blue">
+  <nav class="grey darken-4">
 
     <div class="nav-wrapper">
     <div class="row">
@@ -78,12 +80,18 @@
 	<div class="col s2 l2"><span class="fa fa-search right in"></span></div>
     <div class="col s4 l5">
 	
-      <form class="blue">
+      <form class="grey darken-4"  th:action="@{/search}" method="GET">
       	<div class="header-search-wrapper">
 
-      	
-          <input id="search" type="search" placeholder=" Search Pubs" class="header-search-input z-depth-2 s"></input>
+      	<div class="row"></div>
+      	<div class="col s11">
+          <input id="search" type="text" placeholder=" Search Pubs" style="margin-top: 10px" class="header-search-input z-depth-2 s" autofocus="autofocus" onfocus="this.select()" name="q"/>
           
+          
+           </div>
+           <div class="col s1">
+          <button type="submit" style="margin-top: 12px" class="btn grey darken-1 btn-block"><span class="fa fa-search"></span> </button>
+         </div>
   		</div>
 
 
@@ -104,7 +112,7 @@
 
 
 	<div class="row">
-    <ul id="tabs-swipe-demo" class="tabs taba">
+    <ul id="tabs-swipe-demo" class="tabs taba grey darken-4">
     <li class="tab col s4"><a class="active" href="#test-swipe-1">Profile</a></li>
     <li class="tab col s4"><a href="#test-swipe-2">Orders</a></li>
     <li class="tab col s4"><a href="#test-swipe-3">Payment</a></li>
@@ -211,6 +219,8 @@
       </p>
       <p>
         <input type="text" style="width:350px; margin: auto;" name="address" value="Cork"  placeholder="Address" />
+        <input type="hidden" name="coords" value="" id="lt"/>
+        <input type="hidden" name="coords" value="" id="lg"/>
         <input type="submit" value="Go!" class="btn blue darken-1 btn-block"/>
       </p>
       </div>
@@ -250,24 +260,23 @@
           <div class="col s10 m8 l6">
             <h3 class="or center-align">Order History</h3>
             
-              <div class="cc">
-                <h3>The Abbey </h3>
-                <h4>Items - 2 Bulmers, 1 Jagerbomb and Coca Cola</h4>
-                <h4>Customer - Adam Howard</h4>
-                <h4>Email - Adam.Howard@mycit.ie</h4>
+              
+              <div class="cc" th:each="o : ${orders}">
+                <h3 th:text="${nme}">The Abbey </h3>
+                <h4 th:text="${o.itemStr}">Items - 2 Bulmers, 1 Jagerbomb and Coca Cola</h4>
+                <h4 th:text="${o.customerName}">Customer - Adam Howard</h4>
+                <h4 th:text="${o.customerEmail}">Email - Adam.Howard@mycit.ie</h4>
                 
 
-                <h4>Total - <span class="fa fa-euro"></span> 10.40</h4>
-                <h4>Order Number - 3113</h4>
+                <h4 th:text="${o.total}">Total - <span class="fa fa-euro"></span> 10.40</h4>
+                <h4 th:text="${o.orderNumber}">Order Number - 3113</h4>
           
-                <h4>Card Number - 431987323911022</h4>
-                <span class="fa fa-cc-visa right fa-4x"></span>
-                <h4 class="">CVV - 987</h4>
+                <h4 th:text="${o.cardNumber}">Card Number - 431987323911022</h4>
                 
-                <h4>Expiry - 0118</h4>
 
                
               </div>
+              
               
               
               

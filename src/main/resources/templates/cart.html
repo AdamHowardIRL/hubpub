@@ -15,7 +15,7 @@
   
 <div class="row">
 
-  <nav class="blue">
+  <nav class="grey darken-4">
 
     <div class="nav-wrapper">
     <div class="row">
@@ -23,15 +23,21 @@
     		<a href="/home"><img src="logo.png" id="brandImg"/></a>
     	</div>
 
-	<div class="col s2 l2"><span class="fa fa-search right in"></span></div>
+	<div class="col s2 l2"></div>
     <div class="col s4 l5">
 	
-      <form class="blue">
+      <form class="grey darken-4"  th:action="@{/search}" method="GET">
       	<div class="header-search-wrapper">
 
-      	
-          <input id="search" type="search" placeholder=" Search Pubs" class="header-search-input z-depth-2 s"></input>
+      	<div class="row"></div>
+      	<div class="col s11">
+          <input id="search" type="text" placeholder=" Search Pubs" style="margin-top: 10px" class="header-search-input z-depth-2 s" autofocus="autofocus" onfocus="this.select()" name="q"/>
           
+          
+           </div>
+           <div class="col s1">
+          <button type="submit" style="margin-top: 12px" class="btn grey darken-1 btn-block"><span class="fa fa-search"></span> </button>
+         </div>
   		</div>
 
 
@@ -128,11 +134,16 @@
 
   
   <!-- Modal Structure -->
-    <div id="modal1" class="modal">
+    <div id="modal1" class="modal fi">
       <div class="modal-content">
-        <h4 class="center-align">Payment Method</h4>
+        <h4 class="center-align">Choose Payment Method</h4>
 <div class="col s3"></div>
-<div class="col s6"><a class='dropdown-button btn-block blue darken-1 btn' href='#' data-activates='dropdown1'>Saved Payment Methods</a></div>
+<div class="col s6">
+<a class='dropdown-button btn-block blue darken-1 btn' href='#' data-activates='dropdown1'>Saved Cards</a>
+
+
+
+</div>
           
 
   <!-- Dropdown Structure -->
@@ -144,40 +155,62 @@
 
 
         <div class="row">
-          <form class="col s12" id="form1" name="form1" action="/addP">
+          <form class="col s12" id="formPay" name="formPay" th:object="${card}" th:action="@{/pay}" method="post">
+          
+          
           
             <div class="row modal-form-row">
               <div class="input-field col s12">
-                <input id="card_num" type="text" class="validate" placeholder="Card Number"></input>
+                <input id="card_num" type="text" class="validate" placeholder="Card Number" th:field="*{cardNumber}"></input>
   
               </div>
             </div>
           
           <div class="row">
             <div class="input-field col s12">
-              <input id="card_cvv" type="text" class="validate" placeholder="CVV"></input>
+              <input id="card_cvv" type="text" class="validate" placeholder="CVV" th:field="*{cvv}"></input>
             
             </div>
           </div>       
           <div class="row">
             <div class="input-field col s12">
-              <input id="card_expiry" type="text" class="validate" placeholder="Expiry"></input>
+              <input id="card_expiry" type="text" class="validate" placeholder="Expiry" th:field="*{expiry}"></input>
     
             </div>
           </div>
            <div class="row modal-form-row">
               <div class="input-field col s12">
-                <input id="card_name" type="text" class="validate" placeholder="Card Holder"></input>
+                <input id="card_name" type="text" class="validate" placeholder="Card Holder" th:field="*{cardHolder}"></input>
   
               </div>
             </div>
-         
-        </form>
-      </div>
+            
+            <div class="row modal-form-row">
+    	
+    	<div class="col s4">
+    		<a class="btn btn-block blue" ><span class="fa fa-paypal"></span>PayPal </a>
+    	</div>
+    	<div class="col s4">
+    	<a class="btn green btn-block" ><span class="fa fa-android"></span>Android Pay</a>
+    	</div>
+    	<div class="col s4">
+    	<a class="btn orange btn-block" ><span class="fa fa-btc"></span>Bitcoin</a>
+    	</div>
     
     </div>
+    <div class="row modal-form-row">
+    	<h3 class="center-align"><i class="fa fa-euro"></i> <span th:text="${totalCart}"></span></h3>
+    </div>
+            
+        </form>
+      </div>
+      
+     
+    
+    </div>
+    
     <div class="modal-footer">
-      <a class="modal-action modal-close btn-block btn green ">Pay</a>
+      <a class="modal-action modal-close btn-block btn green" id="payButt">Pay</a>
     </div>
   </div>
 </div>
@@ -195,9 +228,15 @@
 
 <script type="text/javascript">
        $(document).ready(function(){
+     $('#payButt').click(function(){
+     	$("#formPay").submit();
+     });
+    
     $('ul.tabs').tabs();
      $('.modal').modal();
      $('.modal-trigger').leanModal();
+     
+    
   });
 </script>
 	</body>

@@ -21,6 +21,30 @@ i{
   margin-right: 10px;
 }
 
+#search{
+width: 99% !important;
+display: block;
+
+}
+
+.btn-large{
+line-height: 10px !important;
+}
+#search:focus{
+    border-bottom: 1px solid #F48024;
+     box-shadow: 0 1px 0 0 #F48024;
+ 
+}
+
+.fi{
+height: 610px;
+
+}
+
+.card-panel{
+padding: 3px !important;
+}
+
 body{
   background-color: #f7f7f7 !important;
 }
@@ -35,6 +59,21 @@ body{
     color: white !important;
 }
 
+.input-group {
+    display: table;
+}
+
+.in{
+	display: inline;
+}
+
+.input-group input {
+    display: table-cell;
+}
+
+.ser{
+	
+}
 #upload{
     display:none
 }

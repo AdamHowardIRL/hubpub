@@ -15,7 +15,7 @@
   
 <div class="row">
 
-  <nav class="blue">
+  <nav class="grey darken-4">
 
     <div class="nav-wrapper">
     <div class="row">
@@ -23,15 +23,21 @@
     	<a href="/home">	<img src="logo.png" id="brandImg"/></a>
     	</div>
 
-	<div class="col s2 l2"><span class="fa fa-search right in"></span></div>
+	<div class="col s2 l2"></div>
     <div class="col s4 l5">
 	
-      <form class="blue">
+      <form class="grey darken-4"  th:action="@{/search}" method="GET">
       	<div class="header-search-wrapper">
 
-      	
-          <input id="search" type="search" placeholder=" Search Pubs" class="header-search-input z-depth-2 s"></input>
+      	<div class="row"></div>
+      	<div class="col s11">
+          <input id="search" type="text" placeholder=" Search Pubs" style="margin-top: 10px" class="header-search-input z-depth-2 s" autofocus="autofocus" onfocus="this.select()" name="q"/>
           
+          
+           </div>
+           <div class="col s1">
+          <button type="submit" style="margin-top: 12px" class="btn grey darken-1 btn-block"><span class="fa fa-search"></span> </button>
+         </div>
   		</div>
 
 
