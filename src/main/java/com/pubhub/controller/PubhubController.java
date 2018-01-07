@@ -1,25 +1,20 @@
 package com.pubhub.controller;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
-
-import org.apache.commons.io.FileUtils;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -38,21 +33,23 @@ import com.pubhub.model.Order;
 import com.pubhub.model.Product;
 import com.pubhub.model.Pub;
 import com.pubhub.model.User;
-
+import com.textmagic.sdk.RestClient;
+import com.textmagic.sdk.RestException;
+import com.textmagic.sdk.resource.instance.*;
 @Controller
 public class PubhubController {
 	
-	ArrayList<Product> cart = new ArrayList<Product>();
+	private ArrayList<Product> cart = new ArrayList<Product>();
 	
-	ArrayList<Menu> menus = new ArrayList<Menu>();
+	private ArrayList<Menu> menus = new ArrayList<Menu>();
 
-	ArrayList<Pub> pubs = new ArrayList<Pub>();
+	private ArrayList<Pub> pubs = new ArrayList<Pub>();
 	
-	ArrayList<Pub> activePubs = new ArrayList<Pub>();
+	private ArrayList<Pub> activePubs = new ArrayList<Pub>();
 	
-	ArrayList<User> users = new ArrayList<User>();
+	private ArrayList<User> users = new ArrayList<User>();
 	
-	ArrayList<Order> orders = new ArrayList<Order>();
+	private ArrayList<Order> orders = new ArrayList<Order>();
 	
 	ArrayList<User> active = new ArrayList<User>();
 	
@@ -154,12 +151,16 @@ public class PubhubController {
         	
         }
         
-        
-        for(User u : users) {
-        	if(u.getId() == Integer.parseInt(acc)) {
-        		currentU = (User) u.clone();
-        	}
+        try {
+        	for(User u : users) {
+            	if(u.getId() == Integer.parseInt(acc)) {
+            		currentU = (User) u.clone();
+            	}
+            }
+        } catch (Exception e) {
+        	
         }
+        
         
         
         
@@ -228,18 +229,29 @@ public class PubhubController {
 		ArrayList<Pub> res4 = new ArrayList<Pub>();
 		
 		int maxPubs = pubs.size();
-		for(int i = 0; i < (maxPubs/4); i++) {
-			res1.add(pubs.get(i));
+		
+		
+		if(maxPubs < 4) {
+			res1.add(pubs.get(0));
+			res2.add(pubs.get(1));
+			res3.add(pubs.get(2));
+			res4.add(pubs.get(3));
+		} else {
+			for(int i = 0; i < (maxPubs/4); i++) {
+				res1.add(pubs.get(i));
+			}
+			for(int i = (maxPubs/4); i < (maxPubs/2); i++) {
+				res2.add(pubs.get(i));
+			}
+			for(int i = (maxPubs/2); i < ((maxPubs/4) + (maxPubs/2)); i++) {
+				res3.add(pubs.get(i));
+			}
+			for(int i = ((maxPubs/4) + (maxPubs/2)); i < maxPubs; i++) {
+				res4.add(pubs.get(i));
+			}
 		}
-		for(int i = (maxPubs/4); i < (maxPubs/2); i++) {
-			res2.add(pubs.get(i));
-		}
-		for(int i = (maxPubs/2); i < ((maxPubs/4) + (maxPubs/2)); i++) {
-			res3.add(pubs.get(i));
-		}
-		for(int i = ((maxPubs/4) + (maxPubs/2)); i < maxPubs; i++) {
-			res4.add(pubs.get(i));
-		}
+		
+		
 		model.addAttribute("pubs1", res1);
 		model.addAttribute("pubs2", res2);
 		model.addAttribute("pubs3", res3);
@@ -505,18 +517,20 @@ public class PubhubController {
         
         int curr = 0;
         
-        ArrayList<Pub> toGo = new ArrayList<Pub>();
+        Set<Pub> toGo = new HashSet<Pub>();
         
         
-       
+      
         
         
         for(Product p : cart) {
-        	if(p.getPubId() > curr) {
-        		curr = p.getPubId();
-        		numPubs++;
-        		toGo.add(getPubById(p.getPubId()));
-        	}
+        	toGo.add(pubs.get(p.getPubId()));
+        }
+        
+        for(Pub p : toGo) {
+        	int hold = 0;;
+       
+     	   System.out.println(p.toString());
         }
         
         for(Pub s : toGo) {
@@ -524,8 +538,8 @@ public class PubhubController {
         		if(s.getId() == p.getId()) {
         			Order or = new Order(p.genOrderId());
         			or.setPub(p);
-        			or.setItems(getCartByPub(p, cart));
-        			or.setAmount(Float.toString(totalCart(getCartByPub(p, cart))));
+        			or.setItems(getCartByPub(s.getId(), cart));
+        			or.setAmount(Float.toString(totalCart(getCartByPub(s.getId(), cart))));
         			or.setOrderNumber(p.genOrderId());
         			or.setCustomer(current);
         			or.setTime(new Date());
@@ -541,7 +555,7 @@ public class PubhubController {
         
         
         
-        System.out.println(numPubs);
+       
         
         
         
@@ -559,7 +573,7 @@ public class PubhubController {
 	public Pub getPubById(int id) throws CloneNotSupportedException {
 		for(Pub p : pubs) {
 			if(p.getId() == id)
-				return (Pub) p.clone();
+				return p;
 		}
 		return null;
 	}
@@ -572,10 +586,10 @@ public class PubhubController {
 	}
 	
 	
-	public ArrayList<Product> getCartByPub(Pub p, ArrayList<Product> cart){
+	public ArrayList<Product> getCartByPub(int pubid, ArrayList<Product> cart){
 		ArrayList<Product> res = new ArrayList<Product>();
 		for(Product pe : cart) {
-			if(pe.getPubId() == p.getId()) {
+			if(pe.getPubId() == pubid) {
 				res.add(pe);
 			}
 		}
@@ -585,6 +599,9 @@ public class PubhubController {
 	
 	@RequestMapping("/login")
     public String login(@CookieValue(value = "lid", required = false) String id,@CookieValue(value = "pid", required = false) String pid, @ModelAttribute User user, BindingResult br, Model model, SessionStatus status, HttpSession ses, HttpServletResponse response) {
+		
+		
+		
 		User u = new User();
 		u.setName(user.getName());
 		model.addAttribute("user", u);
@@ -722,14 +739,14 @@ public class PubhubController {
 						
 					
 						
-						Cookie e2 = new Cookie("paid", null);
+						Cookie e2 = new Cookie("paid", "0");
 						e2.setPath("/account");
 						e2.setMaxAge(0);
 						response.addCookie(e2);
-						Cookie q2 = new Cookie("pub", null);
+						Cookie q2 = new Cookie("pub", "0");
 						q2.setPath("/account");
 						response.addCookie(q2);
-						Cookie g2 = new Cookie("pbid", null);
+						Cookie g2 = new Cookie("pbid", "0");
 						g2.setPath("/addMenu");
 						g2.setMaxAge(0);
 						response.addCookie(g2);
@@ -782,16 +799,16 @@ public class PubhubController {
 						g.setMaxAge(60*24);
 						response.addCookie(g);
 						
-						Cookie c1 = new Cookie("id", null);
+						Cookie c1 = new Cookie("id", "0");
 						c1.setPath("/cart");
 						c1.setMaxAge(0);
 						response.addCookie(c1);
 						
-						Cookie d1 = new Cookie("id", null);
+						Cookie d1 = new Cookie("id", "0");
 						d1.setPath("/addCart");
 						d1.setMaxAge(0);
 						response.addCookie(d1);
-						Cookie g1 = new Cookie("acc", null);
+						Cookie g1 = new Cookie("acc", "0");
 						g1.setPath("/account");
 						g1.setMaxAge(0);
 						response.addCookie(g1);
@@ -1025,7 +1042,7 @@ public class PubhubController {
     }
 	
 	@RequestMapping(value = "/search", method = { RequestMethod.GET, RequestMethod.POST })
-    public String search(@ModelAttribute String s,@RequestParam("q") String q,Model model) {
+    public String search(@ModelAttribute String s,@RequestParam("q") String q,Model model) throws CloneNotSupportedException {
 		
 		ArrayList<Pub> results = new ArrayList<Pub>();
 		
@@ -1040,6 +1057,91 @@ public class PubhubController {
 		//description
 		
 		//products on menu - their descriptions
+		
+		
+		ArrayList<Pub> found = new ArrayList<Pub>();
+		try {
+			for(Pub p : pubs) {
+				if(p.getName().toLowerCase().contains(q.toLowerCase()))
+					found.add(p);
+			}
+		} catch (Exception e) {
+			
+		}
+		
+		try {
+			for(Pub p : pubs) {
+				if(p.getDesc().toLowerCase().contains(q.toLowerCase()) && !found.contains(p))
+					found.add(p);
+			}
+		} catch (Exception e) {
+			
+		}
+		
+		try {
+			for(Pub p : pubs) {
+				if(p.getLocation().toLowerCase().contains(q.toLowerCase()))
+					found.add(p);
+			}
+		} catch (Exception e) {
+			
+		}
+		
+		
+		System.out.println(found.size());
+		
+		
+		ArrayList<Pub> res1 = new ArrayList<Pub>();
+		ArrayList<Pub> res2 = new ArrayList<Pub>();
+		ArrayList<Pub> res3 = new ArrayList<Pub>();
+		ArrayList<Pub> res4 = new ArrayList<Pub>();
+		
+		
+		int maxPubs = found.size();
+		if(maxPubs < 4) {
+			try {
+				res1.add(found.get(0));
+			} catch (Exception e) {
+				
+			}
+			
+			try {
+				res2.add(found.get(1));
+			} catch (Exception e) {
+				
+			}
+
+			try {
+				res3.add(found.get(2));
+			} catch (Exception e) {
+	
+			}
+
+			try {
+				res4.add(found.get(3));
+			} catch (Exception e) {
+	
+			}
+		} else {
+			for(int i = 0; i < (maxPubs/4); i++) {
+				res1.add(found.get(i));
+			}
+			for(int i = (maxPubs/4); i < (maxPubs/2); i++) {
+				res2.add(found.get(i));
+			}
+			for(int i = (maxPubs/2); i < ((maxPubs/4) + (maxPubs/2)); i++) {
+				res3.add(found.get(i));
+			}
+			for(int i = ((maxPubs/4) + (maxPubs/2)); i < maxPubs; i++) {
+				res4.add(found.get(i));
+			}
+		}
+	
+		
+		model.addAttribute("pubs1", res1);
+		model.addAttribute("pubs2", res2);
+		model.addAttribute("pubs3", res3);
+		model.addAttribute("pubs4", res4);
 		
 		
         return "index";
@@ -1112,6 +1214,7 @@ public class PubhubController {
 			generated.setPrice(prod.getPrice());
 			generated.setImage(prod.getImageData().getOriginalFilename());
 			generated.setImage(prod.getImage());
+			generated.setPubId(Integer.parseInt(pid));
 			
 			System.out.println(prod.getName());
 			System.out.println(prod.getDesc());
@@ -1236,19 +1339,30 @@ public class PubhubController {
 		ArrayList<Pub> res2 = new ArrayList<Pub>();
 		ArrayList<Pub> res3 = new ArrayList<Pub>();
 		ArrayList<Pub> res4 = new ArrayList<Pub>();
+		
+		
 		int maxPubs = pubs.size();
-		for(int i = 0; i < (maxPubs/4); i++) {
-			res1.add(pubs.get(i));
+		if(maxPubs < 4) {
+			res1.add(pubs.get(0));
+			res2.add(pubs.get(1));
+			res3.add(pubs.get(2));
+			res4.add(pubs.get(3));
+		} else {
+			for(int i = 0; i < (maxPubs/4); i++) {
+				res1.add(pubs.get(i));
+			}
+			for(int i = (maxPubs/4); i < (maxPubs/2); i++) {
+				res2.add(pubs.get(i));
+			}
+			for(int i = (maxPubs/2); i < ((maxPubs/4) + (maxPubs/2)); i++) {
+				res3.add(pubs.get(i));
+			}
+			for(int i = ((maxPubs/4) + (maxPubs/2)); i < maxPubs; i++) {
+				res4.add(pubs.get(i));
+			}
 		}
-		for(int i = (maxPubs/4); i < (maxPubs/2); i++) {
-			res2.add(pubs.get(i));
-		}
-		for(int i = (maxPubs/2); i < ((maxPubs/4) + (maxPubs/2)); i++) {
-			res3.add(pubs.get(i));
-		}
-		for(int i = ((maxPubs/4) + (maxPubs/2)); i < maxPubs; i++) {
-			res4.add(pubs.get(i));
-		}
+	
+		
 		model.addAttribute("pubs1", res1);
 		model.addAttribute("pubs2", res2);
 		model.addAttribute("pubs3", res3);

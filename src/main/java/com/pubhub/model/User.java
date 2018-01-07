@@ -2,7 +2,7 @@ package com.pubhub.model;
 
 import java.util.ArrayList;
 
-public class User implements Cloneable{
+public class User extends Account implements Cloneable{
 	int id;
 	
 	String name;
